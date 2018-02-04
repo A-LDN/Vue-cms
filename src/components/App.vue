@@ -3,7 +3,7 @@
 
     <div class="app-container">
         <mt-header fixed title="黑马程序员Vue项目">
-         <span  slot="left">
+         <span  slot="left" @click="goBack"  v-if="flag">
         <mt-button icon="back">返回</mt-button>
         </span>
         </mt-header>
@@ -35,30 +35,72 @@
 
 
 <script>
-import { Header } from 'mint-ui';
-    export default {
+import { Indicator } from 'mint-ui';
+export default {
+    data(){
+        return{
+            flag:false
+        };
+    },
+    created(){
+        this.initInterceptors();
+    },
+    methods: {
+        initInterceptors() {
+            this.$http.interceptors.request.use(config=> {
+          // Do something before request is sent
+          Indicator.open({
+            text: '加载中...',
+            spinnerType: 'fading-circle'
+            });
+          return config;
+        });
+            this.$http.interceptors.response.use(response=> {
+          // Do something with response data
+          Indicator.close();
+          return response;
+        });
+        },
+        goBack(){
+        this.$router.go(-1)
+        }
+    },
+    watch:{
 
+        "$route.path":{
+            handler:function(newVal){
+            // if(newVal==='/home'){
+            //     this.flag = false;
+            // }else{
+            //     this.flag=true;
+            // }
+            this.flag = !(newVal==='/home');
+        },
+        immediate:true
+        }
     }
+};
 </script>
 
 <style lang="scss" scoped>
-    .app-container{
-        padding-top: 40px;
-        overflow-x: hidden;
-    }
+.app-container {
+  padding-top: 40px;
+  padding-bottom: 50px;
+  overflow-x: hidden;
+}
 
-    .v-enter {
-        opacity: 0;
-        transform: translateX(100%);
-    }
-    .v-leave-to {
-        opacity: 0;
-        transform: translateX(-100%);
-        position: absolute;
-    }
+.v-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+.v-leave-to {
+  opacity: 0;
+  transform: translateX(-100%);
+  position: absolute;
+}
 
-    .v-enter-active,
-    .v-leave-active {
-        transition: all 0.4s ease;
-    }
+.v-enter-active,
+.v-leave-active {
+  transition: all 0.4s ease;
+}
 </style>

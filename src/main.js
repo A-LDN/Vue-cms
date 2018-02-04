@@ -3,7 +3,13 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
+import moment from 'moment'
+Vue.filter('dateFormat',function(val){
+    return moment(val).format("YYYY-MM-DD HH:mm:ss")
+})
+
 import axios from 'axios'
+axios.defaults.baseURL = 'http://39.106.32.91:3000';
 Vue.prototype.$http=axios
 
 
